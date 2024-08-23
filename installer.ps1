@@ -127,6 +127,7 @@ if ($foundAmongUsManifest -eq 0) {
     $shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($targetPath)
     $shortcut.IconLocation = $targetPath
     $shortcut.Save()
+    
     Write-Host "Shortcut created in Start Menu and Desktop" -ForegroundColor Red
     Write-Host "Among Us Modded is ready to play, Have fun!" -ForegroundColor Red
     Pause
