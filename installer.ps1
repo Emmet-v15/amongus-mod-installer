@@ -122,4 +122,7 @@ if ($foundAmongUsManifest -eq 0) {
     $shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($targetPath)
     $shortcut.IconLocation = $targetPath
     $shortcut.Save()
+
+    Write-Host "Modded Among Us is installed! Have fun!"
+    Pause
 }
