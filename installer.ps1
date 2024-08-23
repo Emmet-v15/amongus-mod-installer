@@ -69,7 +69,6 @@ foreach ($line in $steamLibraryFolders) {
         }
     }
 }
-Pause
 if ($foundAmongUsManifest -eq 0) {
     Write-Host "Among Us not found in any Steam library folder"
 } else {
@@ -109,7 +108,6 @@ if ($foundAmongUsManifest -eq 0) {
     Write-Host "The other roles extracted to $moddedPath"
     Start-Process -FilePath "$($steamPath.SteamPath)/steam.exe"
 
-    $moddedPath = "E:\SteamLibrary\steamapps\common\Among Us Modded"
     $targetPath = $moddedPath + "\Among Us.exe"
     $shortcutPath = [System.IO.Path]::Combine([System.Environment]::GetFolderPath('StartMenu'), 'Programs', 'Among Us Modded.lnk')
     $WScriptShell = New-Object -ComObject WScript.Shell
