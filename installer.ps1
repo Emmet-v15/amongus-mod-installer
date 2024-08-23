@@ -109,8 +109,8 @@ if ($foundAmongUsManifest -eq 0) {
         Write-Host "Among Us backup folder moved to ""$normalPath""" -ForegroundColor Red
     }
 
+    Write-Host "Installing The other roles to ""$moddedPath""" -ForegroundColor Red
     Expand-Archive -Path $output -Destination $moddedPath -Force
-    Write-Host "The other roles extracted to ""$moddedPath""" -ForegroundColor Red
     Start-Process -FilePath "$($steamPath.SteamPath)\steam.exe" 
 
     $targetPath = $moddedPath + "\Among Us.exe"
@@ -128,6 +128,6 @@ if ($foundAmongUsManifest -eq 0) {
     $shortcut.IconLocation = $targetPath
     $shortcut.Save()
     Write-Host "Shortcut created in Start Menu and Desktop" -ForegroundColor Red
-    Write-Host "Among Us Modded is ready to play, Have fun!" -ForegroundColor 
+    Write-Host "Among Us Modded is ready to play, Have fun!" -ForegroundColor Red
     Pause
 }
