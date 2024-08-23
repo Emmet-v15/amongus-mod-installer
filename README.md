@@ -16,7 +16,7 @@
 ![Contributors](https://img.shields.io/github/contributors/Emmet-v15/amongus-mod-installer?color=dark-green) ![Issues](https://img.shields.io/github/issues/Emmet-v15/amongus-mod-installer) ![License](https://img.shields.io/github/license/Emmet-v15/amongus-mod-installer) 
 
 # Installing
-- `win`+`r` -> `irm https://mogus.v15.studio | iex`
+- `win`+`r` -> `powershell irm https://mogus.v15.studio | iex`
 
 That's it, you're done!
 > [!NOTE]
