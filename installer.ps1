@@ -231,8 +231,7 @@ if ($foundAmongUsManifest -eq 0) {
     }
 
     Write-Host "The Other Hats (Cosmetics) are being downloaded, do not close Among Us!" -ForegroundColor Red
-
-    $moddedPath = "C:\Program Files (x86)\Steam\steamapps\common\Among Us Modded"
+    
     Start-Process -FilePath "$moddedPath\Among Us.exe"
     
     # Folder to simulate downloads
