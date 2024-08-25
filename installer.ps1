@@ -229,33 +229,19 @@ if ($foundAmongUsManifest -eq 0) {
             Set-Content -Path $shortcutPath -Value $byteArray -Encoding Byte
         }
     }
-
-    Write-Host "The Other Hats (Cosmetics) are being downloaded, do not close Among Us!" -ForegroundColor Red
     
+    Write-Host "Downloading The Other Hats Cosmetics..." -ForegroundColor Red
     Start-Process -FilePath "$moddedPath\Among Us.exe"
-    
-    # Folder to simulate downloads
-    
+    $cosmeticFiles = 872
     $destinationFolder = "$moddedPath\TheOtherHats"
-    
-    # Ensure the folder exists
     if (-not (Test-Path -Path $destinationFolder)) {
         New-Item -Path $destinationFolder -ItemType Directory | Out-Null
     }
-    
-    # Parameters for the fake loading bar
-    $totalSteps = 872       # Total number of steps in the loading bar
-    
-    # Start the fake loading bar
-    while (((Get-ChildItem -Path $destinationFolder -File).Count / $totalSteps) -le 0.99) {
-        # Calculate the percentage completed
-        $percentComplete = ((Get-ChildItem -Path $destinationFolder -File).Count / $totalSteps) * 100
+    Write-Host "Found in the The Other Hats folder: ""$destinationFolder""" -ForegroundColor Red
+    while (((Get-ChildItem -Path $destinationFolder -File).Count / $cosmeticFiles) -le 0.99) {
+        $percentComplete = ((Get-ChildItem -Path $destinationFolder -File).Count / $cosmeticFiles) * 100
         $percentComplete = "{0:N2}" -f $percentComplete
-    
-        # Display the progress bar
-        Write-Progress -Activity "Processing" -Status "$percentComplete% Complete" -PercentComplete $percentComplete
-    
-        # Wait for the calculated delay
+        Write-Progress -Activity "Downloading The Other Hats Files, Do not go into your cosmetics / close Among Us!" -Status "$percentComplete% Complete" -PercentComplete $percentComplete
         Start-Sleep -Milliseconds 1000
     }
     
