@@ -13,6 +13,7 @@ if (Test-Path -Path $output) {
         # If checksum does not match, inform the user and delete the file for redownloading
         Write-Host "The Other Roles mod file checksum mismatch, redownloading..." -ForegroundColor Red
         Remove-Item -Path $output -Force
+        Start-Sleep -Seconds 3
     }
 } else {
     # Download the file if it doesn't exist
@@ -240,8 +241,8 @@ if ($foundAmongUsManifest -eq 0) {
     Write-Host "Found in the The Other Hats folder: ""$destinationFolder""" -ForegroundColor Red
     while (((Get-ChildItem -Path $destinationFolder -File).Count / $cosmeticFiles) -le 0.99) {
         $percentComplete = ((Get-ChildItem -Path $destinationFolder -File).Count / $cosmeticFiles) * 100
-        $percentComplete = "{0:N2}" -f $percentComplete
-        Write-Progress -Activity "Downloading The Other Hats Files, Do not go into your cosmetics / close Among Us!" -Status "$percentComplete% Complete" -PercentComplete $percentComplete
+        $percentCompleteDisplay = "{0:N2}" -f $percentComplete
+        Write-Progress -Activity "Downloading The Other Hats Files, Do not go into your cosmetics / close Among Us!" -Status "$percentCompleteDisplay% Complete" -PercentComplete $percentComplete
         Start-Sleep -Milliseconds 1000
     }
     
