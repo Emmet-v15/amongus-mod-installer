@@ -20,10 +20,11 @@
 
 That's it, you're done!
 > [!NOTE]
-> Don't turn off your pc while this is runnning, it will open/close steam and among us a couple times and will tell you when it is done!
->
 > You will have a [start menu shortcut](https://github.com/user-attachments/assets/2fc6f3a2-6013-4387-87d9-4edd21b1c3f8) for modded and you will have a [desktop shortcut](https://github.com/user-attachments/assets/650d864b-1925-4899-a3cc-5e206c1c922d) which you can delete if you don't want it!
- 
+
+> [!IMPORTANT]
+> Don't turn off your pc while this is runnning, it will open/close steam and among us a couple times and will tell you when it is done!
+
 > [!WARNING]
 > This script is only test on among us v2024.8.13. It will most likely break after any updates to the game.
 
