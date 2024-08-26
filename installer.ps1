@@ -141,7 +141,8 @@ if ($foundAmongUsManifest -eq 0) {
     # Install the mod
     Write-Host "Installing The other roles to ""$moddedPath""" -ForegroundColor Red
     Expand-Archive -Path $output -Destination $moddedPath -Force
-    Start-Process -FilePath "$($steamPath.SteamPath)\steam.exe" 
+    # start steam in the background
+    Start-Process -FilePath "$($steamPath.SteamPath)\steam.exe" -
 
     # Create desktop and Start Menu shortcuts
     $targetPath = $moddedPath + "Among Us.exe"
@@ -164,75 +165,70 @@ if ($foundAmongUsManifest -eq 0) {
     $shortcuts = Get-ChildItem -Path "$($steamPath.SteamPath)\userdata"
     foreach ($shortcut in $shortcuts) {
         $shortcutPath = "$($steamPath.SteamPath)/userdata/$($shortcut.Name)/config/shortcuts.vdf"
-        Write-Host "Patching ""$shortcutPath""" -ForegroundColor Red
-        if (Test-Path -Path $shortcutPath) {
-            $shortcutContent = Get-Content -Path $shortcutPath -Raw -Encoding Byte
-            $shortcutContent = [System.BitConverter]::ToString($shortcutContent).Replace("-", "")
-            $patched = $shortcutContent -match '.*(00(3[0-9]){1,}0002.*?416D6F6E672055732E65786522.*?0808)'
-            if ($patched) {
-                Write-Host "Steam shortcut file already patched, reapplying..." -ForegroundColor Red
-                $shortcutContent = $shortcutContent -replace $matches[1], ''
-            }
-            $tmp = $shortcutContent.ToCharArray()
-            [Array]::Reverse($tmp)
-            $tmp = -join $tmp
-            $hasItems = $tmp -match '2000([0-9]3){1,}00' | Out-Null
-            # if doesn't have any items, set index to 0
-            $index = '0'
-            if (!$hasItems) {
-                $index = '30' # 0 in ASCII
-            } else {
-                $tmp = $matches[0].ToCharArray()
-                [Array]::Reverse($tmp)
-                $match = -join $tmp
-                $match = $match.Substring(2)
-                $match = $match.Substring(0, $match.Length - 4)
-                $match = $match -split '(..)' | Where-Object { $_ }
-                $match = $match -replace '^\d', ''
-                $match = $match -join ''
-                $match = [int]$match + 1
-                $match = $match.ToString()
-                $match = $match.ToCharArray()
-                $index = ''
-                for ($i = 0; $i -lt $match.Length; $i++) {
-                    $index = $index + '3' + $match[$i]
-                }
-            }
 
-            $path = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes($moddedPath)).Replace("-", "")
-            $shortcutName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us Modded")).Replace("-", "")
-            $executableName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us.exe")).Replace("-", "")
-            $favouritesPatch = "" # set this to "0130006661766F7269746500" to add the favourite flag, this it buggy as steam doesn't update the shortcuts properly
-            # :D
-            $amongusPatch="00${index}0002617070696400A798A9BF014170704E616D6500${shortcutName}00014578650022${path}${executableName}220001537461727444697200${path}000169636F6E00000153686F7274637574506174680000014C61756E63684F7074696F6E73000002497348696464656E000000000002416C6C6F774465736B746F70436F6E666967000100000002416C6C6F774F7665726C61790001000000024F70656E56520000000000024465766B69740000000000014465766B697447616D6549440000024465766B69744F7665727269646541707049440000000000024C617374506C617954696D65000000000001466C617470616B41707049440000007461677300${favouritesPatch}0808"
-            $shortcutContent = $shortcutContent.Insert($shortcutContent.Length - 4, $amongusPatch)
-            $byteArray = [byte[]]::new($shortcutContent.Length / 2)
-            for ($i = 0; $i -lt $shortcutContent.Length; $i += 2) {
-                $byteArray[$i / 2] = [Convert]::ToByte($shortcutContent.Substring($i, 2), 16)
-            }
-            Set-Content -Path $shortcutPath -Value $byteArray -Encoding Byte
-            Write-Host "Steam shortcut file patched successfully!" -ForegroundColor Red
-        } else {
-            Write-Host "Steam shortcut file not found, creating..." -ForegroundColor Red
-            $index = "30"
-            $shortcutName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us Modded")).Replace("-", "")
-            $executableName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us.exe")).Replace("-", "")
-            $defaultShortcutContent = "0073686F72746375747300"
-            $amongusPatch = "${defaultShortcutContent}00${index}0002617070696400A798A9BF014170704E616D6500${shortcutName}00014578650022${path}${executableName}220001537461727444697200${path}000169636F6E00000153686F7274637574506174680000014C61756E63684F7074696F6E73000002497348696464656E000000000002416C6C6F774465736B746F70436F6E666967000100000002416C6C6F774F7665726C61790001000000024F70656E56520000000000024465766B69740000000000014465766B697447616D6549440000024465766B69744F7665727269646541707049440000000000024C617374506C617954696D65000000000001466C617470616B4170704944000000746167730008080808"
-            $byteArray = [byte[]]::new($amongusPatch.Length / 2)
-            for ($i = 0; $i -lt $amongusPatch.Length; $i += 2) {
-                $byteArray[$i / 2] = [Convert]::ToByte($amongusPatch.Substring($i, 2), 16)
-            }
-            $directory = "$($steamPath.SteamPath)/userdata/$($shortcut.Name)/config"
-            if (!(Test-Path -Path $directory)) {
-                New-Item -Path $directory -ItemType Directory
-            }
-            Set-Content -Path $shortcutPath -Value $byteArray -Encoding Byte
+        $defaultShortcutContent = "0073686F72746375747300"
+        for ($i = 0; $i -lt $defaultShortcutContent.Length; $i += 2) {
+            $byteArray[$i / 2] = [Convert]::ToByte($defaultShortcutContent.Substring($i, 2), 16)
         }
+        Set-Content -Path $shortcutPath -Value $byteArray -Encoding Byte
+        Start-Sleep -Seconds 1
+        Write-Host "Patching ""$shortcutPath""" -ForegroundColor Red
+        $shortcutContent = Get-Content -Path $shortcutPath -Raw -Encoding Byte
+        $shortcutContent = [System.BitConverter]::ToString($shortcutContent).Replace("-", "")
+        $patched = $shortcutContent -match '.*(00(3[0-9]){1,}0002.*?416D6F6E672055732E65786522.*?0808)'
+        if ($patched) {
+            Write-Host "Steam shortcut file already patched, reapplying..." -ForegroundColor Red
+            $shortcutContent = $shortcutContent -replace $matches[1], ''
+        }
+        $tmp = $shortcutContent.ToCharArray()
+        [Array]::Reverse($tmp)
+        $tmp = -join $tmp
+        $hasItems = $tmp -match '2000([0-9]3){1,}00' | Out-Null
+        # if doesn't have any items, set index to 0
+        $index = '0'
+        if (!$hasItems) {
+            $index = '30' # 0 in ASCII
+        } else {
+            $tmp = $matches[0].ToCharArray()
+            [Array]::Reverse($tmp)
+            $match = -join $tmp
+            $match = $match.Substring(2)
+            $match = $match.Substring(0, $match.Length - 4)
+            $match = $match -split '(..)' | Where-Object { $_ }
+            $match = $match -replace '^\d', ''
+            $match = $match -join ''
+            $match = [int]$match + 1
+            $match = $match.ToString()
+            $match = $match.ToCharArray()
+            $index = ''
+            for ($i = 0; $i -lt $match.Length; $i++) {
+                $index = $index + '3' + $match[$i]
+            }
+        }
+
+        $path = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes($moddedPath)).Replace("-", "")
+        $shortcutName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us Modded")).Replace("-", "")
+        $executableName = [System.BitConverter]::ToString([System.Text.Encoding]::ASCII.GetBytes("Among Us.exe")).Replace("-", "")
+        $favouritesPatch = "" # set this to "0130006661766F7269746500" to add the favourite flag, this it buggy as steam doesn't update the shortcuts properly
+        # :D
+        $amongusPatch="00${index}0002617070696400A798A9BF014170704E616D6500${shortcutName}00014578650022${path}${executableName}220001537461727444697200${path}000169636F6E00000153686F7274637574506174680000014C61756E63684F7074696F6E73000002497348696464656E000000000002416C6C6F774465736B746F70436F6E666967000100000002416C6C6F774F7665726C61790001000000024F70656E56520000000000024465766B69740000000000014465766B697447616D6549440000024465766B69744F7665727269646541707049440000000000024C617374506C617954696D65000000000001466C617470616B41707049440000007461677300${favouritesPatch}0808"
+        $shortcutContent = $shortcutContent.Insert($shortcutContent.Length - 4, $amongusPatch)
+        $byteArray = [byte[]]::new($shortcutContent.Length / 2)
+        for ($i = 0; $i -lt $shortcutContent.Length; $i += 2) {
+            $byteArray[$i / 2] = [Convert]::ToByte($shortcutContent.Substring($i, 2), 16)
+        }
+        Set-Content -Path $shortcutPath -Value $byteArray -Encoding Byte
+        Write-Host "Steam shortcut file patched successfully!" -ForegroundColor Red
     }
     
     Write-Host "Downloading The Other Hats Cosmetics..." -ForegroundColor Red
+
     Start-Process -FilePath "$moddedPath\Among Us.exe"
+    while ($null -eq (Get-Process -Name "Among Us" -ErrorAction SilentlyContinue)) {
+        Start-Sleep -Seconds 1
+        Start-Process -FilePath "$moddedPath\Among Us.exe"
+    }
+
     $cosmeticFiles = 872
     $destinationFolder = "$moddedPath\TheOtherHats"
     if (-not (Test-Path -Path $destinationFolder)) {
